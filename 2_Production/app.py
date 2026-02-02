@@ -24,7 +24,7 @@ import torch
 import Code
 from Code import Chatbot
 
-st.title("Porto Tourism Assistant")
+st.title("Porto & Norte Tourism Assistant")
 
 # Initialize message history in session state if it doesn't exist
 if "messages" not in st.session_state:
