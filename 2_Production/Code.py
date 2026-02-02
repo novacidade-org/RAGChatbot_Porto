@@ -5,7 +5,7 @@ import pandas as pd
 
 import chromadb
 import langchain
-from langchain_ollama import ChatOllama
+from langchain_openai import AzureChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
@@ -121,15 +121,15 @@ compression_retriever = ContextualCompressionRetriever(base_compressor=compresso
 
 chat_history = [] 
 
-def Chatbot(query,model="llama3.1:8b"):
-    
+def Chatbot(query, model="gpt-5-chat"):
+
     system_prompt = (
     """
-    System: This is a Chatbot that only answers to questions related to Porto (Portugal) Tourism. More specifically, to topics related to attractions, accessibility, amenities, activities, available packages, and Ancillary Services. 
+    System: This is a Chatbot that only answers to questions related to Porto (Portugal) Tourism. More specifically, to topics related to attractions, accessibility, amenities, activities, available packages, and Ancillary Services.
     When not specicified by the user assume the question is related to Porto.
     If the question is not about Porto Tourism just write: "I am sorry, but my knowledge only allows me to help you with Porto Tourism topics. Can I help you with something related to Porto Tourism?"
-    
-    Answer to the user's question objectively with only the necessary information, using correct syntax and based on context writen below: 
+
+    Answer to the user's question objectively with only the necessary information, using correct syntax and based on context writen below:
     {context}\n
 
     User: {input}
@@ -145,12 +145,13 @@ def Chatbot(query,model="llama3.1:8b"):
     )
 
 
-    generator_model = ChatOllama(
+    generator_model = AzureChatOpenAI(
                     model=model,
-                    base_url="http://localhost:11434",
+                    azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT_UNKNOWN_RESOURCE"),
+                    openai_api_type="azure",
+                    api_key=os.getenv("AZURE_OPENAI_KEY_UNKNOWN_RESOURCE"),
+                    api_version="2024-12-01-preview",
                     temperature=0,
-                    num_gpu=1,
-                    num_ctx=50000,
                 )
         
 
