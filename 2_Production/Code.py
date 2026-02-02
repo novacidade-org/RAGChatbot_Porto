@@ -85,7 +85,7 @@ def BM25TextPreparation(data,Series_metadata, chunk_size):
 
 main_path = os.path.dirname(os.getcwd())
 # need to import the Corpus again to create the sparse vector for BM25Retriever
-df_db = pd.read_excel(main_path+"\\1_ModelDevelopment\\2_Data\\1_Final\\Dataset_Final.xlsx").drop("Unnamed: 0", axis=1)
+df_db = pd.read_excel(os.path.join(main_path, "1_ModelDevelopment", "2_Data", "1_Final", "Dataset_Final.xlsx")).drop("Unnamed: 0", axis=1)
 # Clean text in order to have exactly the same text that is stored in the vector databases. Otherwise the Reciprocal Ranking Fusion formula will not work.
 df_db["Texto_lower"] = [limpar_texto(texto) for texto in df_db["Texto"].to_list()]
 # list with the documents that compõe o Corpus with 7000 chunk-size
@@ -94,16 +94,18 @@ texts_3000 = BM25TextPreparation(df_db["Texto_lower"].to_list(),df_db["Source"],
 
 
 
-model_kwargs = {'device': device[0], "trust_remote_code":True}
+model_kwargs = {'device': device[0]}
+encode_kwargs = {'normalize_embeddings': True}
 
 embeddings = HuggingFaceEmbeddings(
-    model_name="Alibaba-NLP/gte-large-en-v1.5",
+    model_name="BAAI/bge-large-en-v1.5",
     model_kwargs=model_kwargs,
+    encode_kwargs=encode_kwargs,
 )
 
 
-vector_store = Chroma(collection_name="DB_Porto_Final_alibaba_embeddings_treated_3000",
-                      persist_directory=main_path+"\\1_ModelDevelopment\\2_Data\\2_DBs\\",
+vector_store = Chroma(collection_name="DB_Porto_Final_bge_embeddings_treated_3000",
+                      persist_directory=os.path.join(main_path, "1_ModelDevelopment", "2_Data", "2_DBs"),
                       embedding_function=embeddings)
 
 
@@ -145,6 +147,7 @@ def Chatbot(query,model="llama3.1:8b"):
 
     generator_model = ChatOllama(
                     model=model,
+                    base_url="http://localhost:11434",
                     temperature=0,
                     num_gpu=1,
                     num_ctx=50000,

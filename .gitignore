@@ -1,0 +1,14 @@
+# Python bytecode
+*.pyc
+__pycache__/
+
+# Checkpoints
+*checkpoint*
+checkpoint.py
+
+# Chroma SQLite database
+*.sqlite3
+chroma.sqlite3
+
+# Streamlit
+.streamlit/
